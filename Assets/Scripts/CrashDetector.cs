@@ -1,18 +1,28 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CrashDetector : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] float loadDelay = 0.5f;
+    [SerializeField] ParticleSystem crashEffect;
+    [SerializeField] AudioClip crashSFX;
+
+    bool hasCrashed = false;
+
+    void OnTriggerEnter2D(Collider2D collision)
     {
-        
+        if (collision.tag == "Ground")
+        {
+            hasCrashed = true;
+            GetComponent<AudioSource>().PlayOneShot(crashSFX);
+            FindAnyObjectByType<PlayerController>().DisableControls();
+            crashEffect.Play();
+            Invoke(nameof(ReloadScene), loadDelay);
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    void ReloadScene()
     {
-        
+        SceneManager.LoadScene(0);
     }
 }
