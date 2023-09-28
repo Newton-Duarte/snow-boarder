@@ -62,9 +62,9 @@ public class GameController : MonoBehaviour
         audioSource.Play();
     }
 
-    public void GetCoin()
+    public void SetScore(int points = 1)
     {
-        score++;
+        score += points;
         txtScore.text = score.ToString();
         sfxSource.PlayOneShot(coinClip);
     }
