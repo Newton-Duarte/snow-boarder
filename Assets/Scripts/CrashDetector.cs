@@ -11,7 +11,7 @@ public class CrashDetector : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.tag == "Ground")
+        if (collision.tag == "Ground" && !hasCrashed)
         {
             hasCrashed = true;
             GetComponent<AudioSource>().PlayOneShot(crashSFX);
