@@ -10,6 +10,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float baseSpeed = 25f;
     [SerializeField] float jumpForce = 10f;
     [SerializeField] AudioClip jumpClip;
+    [SerializeField] AudioClip flipClip;
+
+    float xAxis;
+    float yAxis;
+    float flipTime;
+    float minZAngleToFlip = 300;
 
     bool canMove = true;
     bool isGrounded = false;
@@ -33,10 +39,42 @@ public class PlayerController : MonoBehaviour
     {
         if (canMove && gameController.gameStatus == GameStatus.Play)
         {
+            xAxis = Input.GetAxisRaw("Horizontal");
+            yAxis = Input.GetAxisRaw("Vertical");
+
             RotatePlayer();
             RespondToBoost();
             RespondToJump();
+            DetectFlip();
         }
+    }
+
+    void DetectFlip()
+    {
+        if (!isGrounded)
+        {
+            if (xAxis != 0)
+            {
+                float zAngle = transform.eulerAngles.z;
+                flipTime += Time.deltaTime;
+            
+                if (flipTime >= 1 && zAngle > minZAngleToFlip)
+                {
+                    flipTime = 0;
+                    Flip();
+                }
+            }
+            else if (flipTime > 0)
+            {
+                flipTime = 0;
+            }
+        }
+    }
+
+    void Flip()
+    {
+        audioSource.PlayOneShot(flipClip);
+        gameController.SetScore(100);
     }
 
     void RespondToJump()
@@ -50,17 +88,15 @@ public class PlayerController : MonoBehaviour
 
     void RespondToBoost()
     {
-        float y = Input.GetAxisRaw("Vertical");
-
-        if (y < 0 && surfaceEffector.speed != baseSpeed)
+        if (yAxis < 0 && surfaceEffector.speed != baseSpeed)
         {
             surfaceEffector.speed = baseSpeed;
         }
-        else if (y > 0 && surfaceEffector.speed != boostSpeed)
+        else if (yAxis > 0 && surfaceEffector.speed != boostSpeed)
         {
             surfaceEffector.speed = boostSpeed;
         }
-        else if (y == 0)
+        else if (yAxis == 0)
         {
             surfaceEffector.speed = baseSpeed;
         }
@@ -68,8 +104,7 @@ public class PlayerController : MonoBehaviour
 
     void RotatePlayer()
     {
-        float x = Input.GetAxisRaw("Horizontal");
-        rb.AddTorque(torqueAmount * -x);
+        rb.AddTorque(torqueAmount * -xAxis);
     }
 
     public void DisableControls()
@@ -97,7 +132,7 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.tag == "Coin")
         {
-            gameController.GetCoin();
+            gameController.SetScore();
             Destroy(collision.gameObject);
         }
     }
