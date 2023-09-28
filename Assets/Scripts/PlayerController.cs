@@ -9,11 +9,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float boostSpeed = 30f;
     [SerializeField] float baseSpeed = 25f;
     [SerializeField] float jumpForce = 10f;
+    [SerializeField] AudioClip jumpClip;
 
     bool canMove = true;
     bool isGrounded = false;
 
     Rigidbody2D rb;
+    AudioSource audioSource;
     SurfaceEffector2D surfaceEffector;
     GameController gameController;
 
@@ -21,6 +23,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        audioSource = GetComponent<AudioSource>();
         surfaceEffector = FindAnyObjectByType<SurfaceEffector2D>();
         gameController = FindAnyObjectByType<GameController>();
     }
@@ -40,6 +43,7 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetKeyUp(KeyCode.Space) && isGrounded)
         {
+            audioSource.PlayOneShot(jumpClip);
             rb.AddForceY(jumpForce, ForceMode2D.Impulse);
         }
     }
