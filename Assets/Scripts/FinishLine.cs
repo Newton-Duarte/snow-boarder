@@ -1,12 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+
 
 public class FinishLine : MonoBehaviour
 {
     [SerializeField] float loadDelay = 1f;
     [SerializeField] ParticleSystem finishEffect;
+
+    GameController gameController;
+
+    private void Start()
+    {
+        gameController = FindAnyObjectByType<GameController>();
+    }
 
     void OnTriggerEnter2D(Collider2D collision)
     {
@@ -14,12 +19,12 @@ public class FinishLine : MonoBehaviour
         {
             finishEffect.Play();
             GetComponent<AudioSource>().Play();
-            Invoke(nameof(ReloadScene), loadDelay);
+            Invoke(nameof(Finish), loadDelay);
         }
     }
 
-    void ReloadScene()
+    void Finish()
     {
-        SceneManager.LoadScene(0);
+        gameController.CompleteLevel();
     }
 }
