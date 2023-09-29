@@ -15,6 +15,14 @@ public class DustTrail : MonoBehaviour
         gameController = FindAnyObjectByType<GameController>();
     }
 
+    void Update()
+    {
+        if (gameController.gameStatus == GameStatus.Title && audioSource.isPlaying)
+        {
+            StopEffect();
+        }
+    }
+
     void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.tag == "Ground" && gameController.gameStatus == GameStatus.Play)
@@ -29,13 +37,18 @@ public class DustTrail : MonoBehaviour
 
     void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.tag == "Ground" && gameController.gameStatus == GameStatus.Play)
+        if (collision.gameObject.tag == "Ground")
         {
-            audioSource.Stop();
-            audioSource.clip = null;
-            audioSource.loop = false;
-
-            dustTrailEffect.Stop();
+            StopEffect();
         }
+    }
+
+    public void StopEffect()
+    {
+        audioSource.Stop();
+        audioSource.clip = null;
+        audioSource.loop = false;
+
+        dustTrailEffect.Stop();
     }
 }
