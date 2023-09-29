@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public enum GameStatus
 {
@@ -11,8 +12,14 @@ public enum GameStatus
 public class GameController : MonoBehaviour
 {
     [Header("UI")]
-    [SerializeField] GameObject canvas;
+    [SerializeField] GameObject titleCanvas;
+    [SerializeField] GameObject hudCanvas;
+    [SerializeField] GameObject scoreCanvas;
     [SerializeField] TextMeshProUGUI txtScore;
+
+    [Header("UI Score Panel")]
+    [SerializeField] TextMeshProUGUI timeText;
+    [SerializeField] TextMeshProUGUI pointsText;
 
     [Header("Effector")]
     [SerializeField] SurfaceEffector2D effector2D;
@@ -30,8 +37,14 @@ public class GameController : MonoBehaviour
 
     public GameStatus gameStatus = GameStatus.Title;
 
+    Stopwatch stopwatch;
+
     void Start()
     {
+        titleCanvas.SetActive(true);
+        hudCanvas.SetActive(false);
+        scoreCanvas.SetActive(false);
+        stopwatch = FindAnyObjectByType<Stopwatch>();
         effector2D.speed = 0f;
         txtScore.text = score.ToString();
         PlayTitleClip();
@@ -39,9 +52,11 @@ public class GameController : MonoBehaviour
 
     public void PlayGame()
     {
-        canvas.SetActive(false);
+        titleCanvas.SetActive(false);
+        hudCanvas.SetActive(true);
         effector2D.speed = effectorSpeed;
         gameStatus = GameStatus.Play;
+        stopwatch.StartTimer();
         PlayGameClip();
     }
 
@@ -67,5 +82,21 @@ public class GameController : MonoBehaviour
         score += points;
         txtScore.text = score.ToString();
         sfxSource.PlayOneShot(coinClip);
+    }
+
+    public void CompleteLevel()
+    {
+        stopwatch.StopTimer();
+        effector2D.speed = 0;
+        gameStatus = GameStatus.Title;
+        timeText.SetText(stopwatch.GetTime());
+        pointsText.SetText(score.ToString());
+        hudCanvas.SetActive(false);
+        scoreCanvas.SetActive(true);
+    }
+
+    public void ReloadScene()
+    {
+        SceneManager.LoadScene(0);
     }
 }
