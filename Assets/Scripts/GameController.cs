@@ -87,6 +87,7 @@ public class GameController : MonoBehaviour
     public void CompleteLevel()
     {
         stopwatch.StopTimer();
+        audioSource.Stop();
         effector2D.speed = 0;
         gameStatus = GameStatus.Title;
         timeText.SetText(stopwatch.GetTime());
