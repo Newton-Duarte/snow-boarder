@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -11,6 +8,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float jumpForce = 10f;
     [SerializeField] AudioClip jumpClip;
     [SerializeField] AudioClip flipClip;
+    [SerializeField] ParticleSystem flipEffect;
 
     float xAxis;
     float yAxis;
@@ -25,7 +23,6 @@ public class PlayerController : MonoBehaviour
     SurfaceEffector2D surfaceEffector;
     GameController gameController;
 
-    // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -34,7 +31,6 @@ public class PlayerController : MonoBehaviour
         gameController = FindAnyObjectByType<GameController>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (canMove && gameController.gameStatus == GameStatus.Play)
@@ -58,7 +54,7 @@ public class PlayerController : MonoBehaviour
                 float zAngle = transform.eulerAngles.z;
                 flipTime += Time.deltaTime;
             
-                if (flipTime >= 1 && zAngle > minZAngleToFlip)
+                if (flipTime >= 0.75f && zAngle > minZAngleToFlip)
                 {
                     flipTime = 0;
                     Flip();
@@ -75,6 +71,7 @@ public class PlayerController : MonoBehaviour
     {
         audioSource.PlayOneShot(flipClip);
         gameController.SetScore(100);
+        flipEffect.Play();
     }
 
     void RespondToJump()
