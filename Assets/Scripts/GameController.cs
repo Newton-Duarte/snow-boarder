@@ -96,8 +96,16 @@ public class GameController : MonoBehaviour
         scoreCanvas.SetActive(true);
     }
 
-    public void ReloadScene()
+    public void LoadNextScene()
     {
-        SceneManager.LoadScene(0);
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        int nextSceneIndex = currentSceneIndex + 1;
+
+        if (nextSceneIndex == SceneManager.sceneCountInBuildSettings)
+    {
+            nextSceneIndex = 0;
+        }
+
+        SceneManager.LoadScene(nextSceneIndex);
     }
 }
